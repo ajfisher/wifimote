@@ -70,9 +70,17 @@ documented and has few dependencies. This can be run on something like a
 Raspberry Pi or other very lightweight device as a server quite easily and a
 serious web server environment is not required.
 
+#### Patches to CherryPy
+
+It should be noted that the CherryPy web server has been monkey-patched in two
+locations. This is because the RN-XV doesn't send the correct headers as part
+of the request. This strict header view that CherryPy has is relaxed with the
+monkeypatch to include the way the RN-XV sends its headers (as there's no way
+to change this on an embedded system).
+
 ## Installation
 
-Download or clone the repository at: []
+Download or clone the repository at: github.com/ajfisher/wifimote
 
 It is recommended that virtualenv is used. So create a new virtual environment
 for python.
@@ -94,8 +102,74 @@ document.
 
 ## Setting up the RN-XV
 
-### Configuring the RN-XV device
+The RN-XV is a simple device that can be accessed over serial (using screen) or
+connected via telnet. Read the user manual for much more in depth information.
+It is recommended to update the device to the latest firmware before any other
+tasks.
 
-### Calibrating the RN-XV Sensor
+Basic configuration requires the following tasks:
 
-The RN-XV sensor 
+* Automatic association to the network
+* Getting an IP address
+* Setting configuration about what the URL is to request
+* Setting the host and port to access
+* Setting the sensor map
+* Setting the request type (HTTP and data to send)
+
+A basic set of instructions to do the above would look like the following. Note
+that the comments after # should NOT be entered
+
+Basic config:
+
+    set option deviceid <name>  # sets the name of the device
+    set wlan ssid <SSID>        # use the name of your network
+    set wlan pass <pass>        # your password
+    set wlan join 1             # Auto join at start up
+    set wlan auth 4             # WPA2-PSK but others exist
+
+    set time zone 14            # sets to UTC + 10 - you can't go backwards
+
+Saving:
+
+    save                        # save the current config
+    reboot                      # reboot and apply it.
+
+Web request config:
+
+    set ip proto 18             # sets to tcp and http
+    set ip host <IP>            # The IP where you're running the server
+    set ip remote 8081          # change this if you change it in the settings
+    set com remote GET$/reading?data= # URL to request
+    set option format 31        # send all the data
+    set q sensor 0xFF           # send all sensor states
+
+
+## Calibrating the RN-XV Sensor
+
+The RN-XV sensor isn't consistent from the factory and as such requires
+calibration. The simplest way to do this is with a basic set of readings and
+a linear regression. 
+
+Take one sensor (eg SENSOR 2 / Pin 20) and introduce a known voltage between
+0 and 2V. This is your known state. Query the hex values (you can do this
+via the command interface to the device using show q 2 or just get the values
+from the web request). Plot the input voltage and read voltage in two columns
+and then perform a least squares linear regression on the values (Excel or Google
+docs have these functions available). This will give you the values for
+Intercept and Slope that you need to supply into the settings file for the device.
+
+Once this is done you should notice the values are much closer together once
+the regression is used on the input. 
+
+## Roadmap
+
+This is the current roadmap:
+
+* Document and produce a proper schematic of the circuit to show how it can be used
+* Try to include Xively again once their python library is updated
+* storage in json to a local store
+* use D3 to create a local visualisation.
+* Include other end points and have it configurable.
+
+
+
