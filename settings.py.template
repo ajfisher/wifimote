@@ -1,0 +1,27 @@
+# settings required for the converter.
+
+DEBUG = False
+
+
+# server settings.
+HOST = "0.0.0.0"
+PORT = 8081
+
+SENSE_API_KEY = "PUT_YOUR_API_KEY_HERE"
+
+# define the values for the various wifly sensors
+
+# each sensor should have a name and then define the calibration regression
+# that your are using to normalise the readings (there is some wackiness with
+# this from RN). You should also define which sensor pins  you are interested
+# in and the feed id it should be passed to.
+
+SENSORS = {
+        "HESTIA": {
+            "intercept": 35.0834,
+            "slope": 0.148667,
+            "sensor_pins": [{ "pin_id": 2, "feed_id":feed_id}, ],
+        },
+}
+
+
