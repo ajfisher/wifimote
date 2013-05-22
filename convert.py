@@ -1,7 +1,9 @@
+from datetime import datetime
 import json
-import urllib2
+from urllib2 import HTTPError, Request, urlopen 
 
 import cherrypy, cherrypy.wsgiserver
+import pytz
 
 import settings
 from utils import read_request_line, read_headers
@@ -26,6 +28,7 @@ class SensorServer:
     """
 
     @cherrypy.expose
+    @cherrypy.tools.caching(on=False)
     def reading(self, **kwargs):
         """
         Exposes a reading that the wifly can trigger by making a GET request.
@@ -63,11 +66,16 @@ class SensorServer:
 
                 response_code = sense.publish_events()
 
-                if settings.DEBUG:
-                    print "Published events to sen.se - response: %s" % response_code
+                if response_code == 200:
+                    # all okay
+                    if settings.DEBUG:
+                        print "Published events to sen.se - response: %s" % response_code
 
-                cherrypy.response.status = 200
-                cherrypy.response.body = ['Data logged']
+                    cherrypy.response.status = 200
+                    cherrypy.response.body = ['Data logged']
+                else:
+                    cherrypy.response.status = response_code
+                    cherrypy.response.body = ['There was an error of some sort']
             else:
 
                 cherrypy.response.status = 403
@@ -94,9 +102,22 @@ class Sense:
         """
         Adds an event to the payload in order to be sent
         """
+        #get the current time
+        t = datetime.now(pytz.timezone("Australia/Melbourne")) 
+        # the wacky formatting below here is because python likes microseconds
+        # but Sen.se only like milliseconds and it expects a particular
+        # time zone format with a : in it so there's a bit of manipulation reqd
+        tt = (t.strftime("%Y-%m-%dT%H:%M:%S.") +  
+                ("%03d" % (t.microsecond/1000)) + t.strftime("%z") )
+        tt = tt[:-2] + ":" + tt[-2:]
+
+        if settings.DEBUG:
+            print tt
+
         self.data.append({
             'feed_id': feed_id,
             'value': '%0.2f' % value,
+            'timetag': tt
             })
 
     def publish_events(self):
@@ -105,20 +126,27 @@ class Sense:
         status code only
         """
 
-        request = urllib2.Request(self.baseurl)
+        request = Request(self.baseurl)
         request.add_header("sense_key", self.api_key)
         request.add_header("content-type", "application/json")
-        request.add_data(json.dumps(self.data).encode('utf-8'))
+        request.add_data(json.dumps(self.data))
+
+        if settings.DEBUG:
+            print request.data
 
         try:
-            response = urllib2.urlopen(request)
-        except HTTPError:
-            response.code = 500
+            response = urlopen(request)
+            if settings.DEBUG:
+                print response.read()
+        except HTTPError, e:
+            print "Some sort of HTTP style error occurred: Code: %s, reason: %s" % ( 
+                e.code, e.reason)
+            print "Package was: %s" % json.dumps(self.data)
+
         finally:
             self.data = []
 
-        return response.code
-
+        return response.code if "response" in vars() else e.code
 
 
 def _convert_to_mv(data = "", intercept=0, slope=1):
