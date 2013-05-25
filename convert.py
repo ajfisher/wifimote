@@ -47,10 +47,7 @@ class SensorServer:
                 node_settings = settings.SENSORS[wiflynode]
 
                 # get the raw values off the node
-                adc = _convert_to_mv(data, 
-                            intercept = node_settings["intercept"],
-                            slope = node_settings["slope"]
-                        )
+                adc = _convert_to_mv(data)
 
                 if settings.DEBUG:
                     print adc
@@ -58,11 +55,13 @@ class SensorServer:
                 # convert the appropriate ones to temp values in degC
                 #temps = [_convert_to_celcius(adc[pin]) for pin in node_settings["sensor_pins"]]
                 for pin in node_settings['sensor_pins']:
-                    temp = _convert_to_celcius(adc[pin["pin_id"]])
+                    mv = _normalise_adc(adc[pin["pin_id"]], pin["intercept"], pin["slope"])
+                    temp = _convert_to_celcius(mv)
                     sense.add_event(pin["feed_id"], temp)
 
                     if settings.DEBUG:
-                        print temp
+                        print "ID: %s raw: %s norm: %s temp: %s" % (
+                                pin["pin_id"], adc[pin["pin_id"]], mv, temp )
 
                 response_code = sense.publish_events()
 
@@ -146,7 +145,7 @@ class Sense:
         return response.code if "response" in vars() else e.code
 
 
-def _convert_to_mv(data = "", intercept=0, slope=1):
+def _convert_to_mv(data = ""):
     """
     Takes a hex string from the stream and converts it to a list of mV values
     Also takes the regression values for calibration and deals with them
@@ -165,12 +164,21 @@ def _convert_to_mv(data = "", intercept=0, slope=1):
     # switch to millivolts
     mv = [val/1000 for val in decvals]
 
-    # apply the calibration regression and drop the first value
-    # as this is just buffer from the rn-xv and not a reading
-    adc = [(adc-intercept)/slope for adc in mv][1:]
+    #get rid of the rubbish buffer vals.
+    adc = mv[1:]
 
     # now what you have is the state of all the raw sensor values
     return adc
+
+def _normalise_adc(mv, intercept=0, slope=1):
+    """
+    Takes a raw voltage value in mV for the RN-XV pin reading and then converts
+    it using the linear regression values to convert it from the ADC. Make sure
+    you have done a regression on each pin as they are all different.
+    """
+
+    # apply the calibration regression and you have a calibrated value
+    return (mv-intercept)/slope
 
 def _convert_to_celcius(mv):
     """
@@ -178,9 +186,6 @@ def _convert_to_celcius(mv):
     10mV / degree Kelvin value
     """
     return mv / 10 - 273.15
-
-
-
 
 # set up the sense option.
 
