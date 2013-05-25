@@ -111,9 +111,6 @@ class Sense:
                 ("%03d" % (t.microsecond/1000)) + t.strftime("%z") )
         tt = tt[:-2] + ":" + tt[-2:]
 
-        if settings.DEBUG:
-            print tt
-
         self.data.append({
             'feed_id': feed_id,
             'value': '%0.2f' % value,
