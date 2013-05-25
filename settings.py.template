@@ -9,6 +9,8 @@ PORT = 8081
 
 SENSE_API_KEY = "PUT_YOUR_API_KEY_HERE"
 
+TZ = "Australia/Melbourne" # timezone you want to work with
+
 # define the values for the various wifly sensors
 
 # each sensor should have a name and then define the calibration regression

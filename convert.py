@@ -102,7 +102,7 @@ class Sense:
         Adds an event to the payload in order to be sent
         """
         #get the current time
-        t = datetime.now(pytz.timezone("Australia/Melbourne")) 
+        t = datetime.now(pytz.timezone(settings.TZ)) 
         # the wacky formatting below here is because python likes microseconds
         # but Sen.se only like milliseconds and it expects a particular
         # time zone format with a : in it so there's a bit of manipulation reqd
