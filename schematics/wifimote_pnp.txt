@@ -1,0 +1,38 @@
+*Pick And Place List
+*Company=
+*Author=
+*eMail=
+*
+*Project=wifimote
+*Date=22:31:26
+*CreatedBy=Fritzing 0.7.12b.02.13.6882
+*
+*
+*Coordinates in mm, always center of component
+*Origin 0/0=Lower left corner of PCB
+*Rotation in degree (0-360, math. pos.)
+*
+*No;Value;Package;X;Y;Rotation;Side;Name
+1;150Ω;THT;38.9467;-70.5202;180;Bottom;150R R1
+2;;;4.52507;-50.152;0;Bottom;TXT2
+3;0.1µF;THT;17.3567;-37.5002;180;Bottom;C1 0.47uF
+4;;300 mil [THT];13.5467;-56.5248;-90;Bottom;D1
+5;;300 mil [THT];17.3821;-47.6602;180;Bottom;D2
+6;;TO92 [THT];49.2972;-62.9891;180;Bottom;T1
+7;;THT;79.5867;-54.0102;180;Bottom;WiFi
+8;;THT;36.413;-62.8938;0;Bottom;1K R1
+9;150Ω;THT;38.9467;-47.6602;180;Bottom;150R R2
+10;;;5.90667;-5.68016;0;Bottom;BL
+11;;;82.9067;-73.6802;0;Bottom;TR
+12;;THT;64.3467;-54.0102;0;Bottom;WiFi
+13;;;5.90667;-73.6802;0;Bottom;TL
+14;;;82.9067;-5.68016;0;Bottom;BR
+15;;TO92 [THT];49.2972;-40.1291;180;Bottom;T2
+16;3V;;5.92667;-66.7102;0;Bottom;Solar
+17;3.3V;TO220 [THT];7.45067;-32.4202;90;Bottom;3.3V Reg
+18;;THT;36.413;-40.0338;0;Bottom;1K R2
+19;470µF;THT;17.3567;-29.8802;-180;Bottom;C2 470uF
+20;;;4.66737;-62.4178;0;Bottom;TXT2
+21;;;67.7835;-65.0486;0;Bottom;TXT1
+22;;300 mil [THT];17.3821;-65.4402;180;Bottom;D3
+23;3V;;5.92667;-46.3902;180;Bottom;Battery
