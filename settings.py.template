@@ -20,9 +20,12 @@ TZ = "Australia/Melbourne" # timezone you want to work with
 
 SENSORS = {
         "HESTIA": {
-            "intercept": 35.0834,
-            "slope": 0.148667,
-            "sensor_pins": [{ "pin_id": 2, "feed_id":feed_id}, ],
+            "sensor_pins": [
+                { 
+                    "pin_id": 2, "feed_id":feed_id,
+                    "intercept": intercept, "slope": slope,
+                }, 
+            ],
         },
 }
 
