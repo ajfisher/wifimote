@@ -6,6 +6,17 @@ This code basically provides an endpoint for the RN-XV WiFly device to be able
 to send data, where it can be processed and then stored or pushed to other
 systems.
 
+## Circuit design
+
+A Fritzing schematic / file is included in the schematics directory. A breadboard
+view hasn't been created yet but the schematic is pretty simple. All the gerber
+files are also included in the schematics directory which you can use to create
+your own boards though note that the holes are set to the size of the box I
+use from Jaycar.
+
+Please note that this board is currently untested as I'm waiting for them to
+arrive from Fusion PCB.
+
 ### RN-XV Overview
 
 The RN-XV WiFly device is very capable though extremely basic. It looks like
